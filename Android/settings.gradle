@@ -1,0 +1,5 @@
+rootProject.name = "SE"
+
+include ':app'
+include ':libs:base-library'
+include ':modules:PKGame'

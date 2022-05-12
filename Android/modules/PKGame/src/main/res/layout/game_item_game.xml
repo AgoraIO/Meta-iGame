@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialComponents.Button.TextButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/game_space_normal"
+    app:icon="@drawable/game_ic_game_1"
+    app:iconGravity="textTop"
+    app:iconPadding="@dimen/game_space_normal"
+    app:iconSize="80dp"
+    app:iconTint="@android:color/transparent"
+    app:iconTintMode="src_atop"
+    tools:drawableTopCompat="@drawable/game_ic_game"
+    tools:text="@string/game_app_name" />

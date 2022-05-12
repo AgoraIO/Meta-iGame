@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "proguard-rules.pro"
+    }
+
+    buildTypes {
+        debug {
+
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures{
+        viewBinding true
+    }
+
+}
+
+dependencies {
+    // RTM 鉴权
+    implementation 'io.agora:authentication:1.6.1'
+    implementation "commons-codec:commons-codec:1.11"
+    // Project
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation(project(":libs:base-library"))
+
+    // Agora
+    implementation 'com.github.AgoraIO-Community:SyncManager-Android:1.0.5.2'
+    implementation('com.github.agorabuilder:agora-full-preview:4.0.0.preview.3')
+    implementation 'io.agora.game:game-sdk:1.0.0'
+
+    // Third part
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation('com.google.code.gson:gson:2.9.0')
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+
+    // Google
+    implementation("androidx.navigation:navigation-fragment:2.3.5")
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+}
