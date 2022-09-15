@@ -16,6 +16,7 @@
             android:id="@+id/toolbar_fg_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:menu="@menu/game_menu_room_list"
             app:title="">
 
             <TextView

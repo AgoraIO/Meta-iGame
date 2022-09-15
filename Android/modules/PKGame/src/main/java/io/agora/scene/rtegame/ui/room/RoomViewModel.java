@@ -1,8 +1,12 @@
 package io.agora.scene.rtegame.ui.room;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.TextureView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Keep;
@@ -12,12 +16,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -38,6 +43,7 @@ import io.agora.rtc2.internal.RtcEngineImpl;
 import io.agora.rtc2.video.VideoCanvas;
 import io.agora.scene.rtegame.GlobalViewModel;
 import io.agora.scene.rtegame.R;
+import io.agora.scene.rtegame.api.GameHttpServer;
 import io.agora.scene.rtegame.bean.AgoraGame;
 import io.agora.scene.rtegame.bean.GameApplyInfo;
 import io.agora.scene.rtegame.bean.GameInfo;
@@ -46,14 +52,20 @@ import io.agora.scene.rtegame.bean.LocalUser;
 import io.agora.scene.rtegame.bean.PKApplyInfo;
 import io.agora.scene.rtegame.bean.PKInfo;
 import io.agora.scene.rtegame.bean.RoomInfo;
+import io.agora.scene.rtegame.bean.api.SudLoginBean;
 import io.agora.scene.rtegame.bean.sdk.AgoraGameList;
 import io.agora.scene.rtegame.bean.sdk.FetchGameListRequiredBean;
 import io.agora.scene.rtegame.bean.sdk.JoinGameRequiredBean;
 import io.agora.scene.rtegame.bean.sdk.SendGiftRequiredBean;
+import io.agora.scene.rtegame.bean.sdk.SudAdditionalRequired;
+import io.agora.scene.rtegame.bean.sdk.SudGameMessage;
+import io.agora.scene.rtegame.bean.sdk.SudJoinGameRequiredBean;
 import io.agora.scene.rtegame.util.Event;
 import io.agora.scene.rtegame.util.GamSyncEventListener;
 import io.agora.scene.rtegame.util.GameConstants;
+import io.agora.scene.rtegame.util.GameEnvType;
 import io.agora.scene.rtegame.util.GameUtil;
+import io.agora.scene.rtegame.util.GsonTool;
 import io.agora.scene.rtegame.util.ViewStatus;
 import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.SceneReference;
@@ -87,7 +99,12 @@ public class RoomViewModel extends ViewModel {
 
 
     //<editor-fold desc="Live data">
-    public final MutableLiveData<List<AgoraGame>> gameList = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<List<AgoraGame>> _gameList = new MutableLiveData<>(new ArrayList<>());
+
+    @NonNull
+    public LiveData<List<AgoraGame>> gameList() {
+        return _gameList;
+    }
 
     // UI状态
     private final MutableLiveData<ViewStatus> _viewStatus = new MutableLiveData<>();
@@ -144,6 +161,23 @@ public class RoomViewModel extends ViewModel {
     }
     //</editor-fold>
 
+
+    private volatile RoomInfo tempSubRoom = null;
+
+    private final int GAME_LIMIT = 10;
+    private int currentPage = 1;
+    private int totalPage = 1;
+
+    private final IRtcEngineEventHandler mySubEventHandler = new IRtcEngineEventHandler() {
+        @Override
+        public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+            super.onJoinChannelSuccess(channel, uid, elapsed);
+            BaseUtil.logD("onJoinChannelSuccess:" + channel + uid);
+            if (tempSubRoom != null)
+                _subRoomInfo.postValue(tempSubRoom);
+        }
+    };
+
     //<editor-fold desc="Init and end">
     public RoomViewModel(@NonNull RoomInfo roomInfo, @NonNull LocalUser localUser, @NonNull RtcEngineEx rtcEngineEx) {
         this.currentRoom = roomInfo;
@@ -161,6 +195,7 @@ public class RoomViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         BaseUtil.logD("RoomViewModel onCleared");
+        rtcEngineEx.removeHandler(mySubEventHandler);
         rtcEngineEx.leaveChannel();
         if (amHost) {
             // Step 1
@@ -282,7 +317,7 @@ public class RoomViewModel extends ViewModel {
             GameInfo gameInfo = _gameShareInfo.getValue();
             if (gameInfo != null && gameInfo.getStatus() == GameInfo.START) {
                 SendGiftRequiredBean requiredBean = new SendGiftRequiredBean(currentRoom.getUserId(), gift.getGiftType() % 2 + 1, 1);
-                GameEngine.getInstance().setOption(2, GameSetOptions.SEND_GIFT, new Gson().toJson(requiredBean));
+                GameEngine.getInstance().setOption(2, GameSetOptions.SEND_GIFT, GsonTool.objToJsonString(requiredBean));
             }
         }
     }
@@ -339,7 +374,7 @@ public class RoomViewModel extends ViewModel {
             case PKApplyInfo.END: {
                 // ensure game end
                 if (currentSceneRef != null)
-                    currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, "", ""), null);
+                    currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, "", "", ""), null);
 
                 endPK();
                 break;
@@ -377,7 +412,7 @@ public class RoomViewModel extends ViewModel {
      */
     public void startApplyPK(@NonNull PKApplyInfo pkApplyInfo) {
         PKInfo pkInfo;
-        GameApplyInfo gameApplyInfo = new GameApplyInfo(GameApplyInfo.PLAYING, pkApplyInfo.getGameId());
+        GameApplyInfo gameApplyInfo = new GameApplyInfo(GameApplyInfo.PLAYING, pkApplyInfo.getGameId(), pkApplyInfo.getVendorId());
         if (Objects.equals(localUser.getUserId(), pkApplyInfo.getUserId())) {//      客户端为发起方
             BaseUtil.logD("发起方");
             pkInfo = new PKInfo(PKInfo.AGREED, pkApplyInfo.getTargetRoomId(), pkApplyInfo.getTargetUserId());
@@ -408,9 +443,9 @@ public class RoomViewModel extends ViewModel {
      * @param targetRoom    对方的 RoomInfo
      * @param gameId        Currently only have one game. Ignore this.
      */
-    public void sendApplyPKInvite(@NonNull RoomViewModel roomViewModel, @NonNull RoomInfo targetRoom, @NonNull String gameId) {
+    public void sendApplyPKInvite(@NonNull RoomViewModel roomViewModel, @NonNull RoomInfo targetRoom, @NonNull String gameId, @NonNull String vendorid) {
         if (targetSceneRef != null)
-            doSendApplyPKInvite(roomViewModel, targetSceneRef, targetRoom, gameId);
+            doSendApplyPKInvite(roomViewModel, targetSceneRef, targetRoom, gameId, vendorid);
         else
             Sync.Instance().joinScene(targetRoom.getId(), new Sync.JoinSceneCallback() {
                 @Override
@@ -418,7 +453,7 @@ public class RoomViewModel extends ViewModel {
                     targetSceneRef = sceneReference;
                     // 发起邀请，监听对方频道
                     roomViewModel.subscribeAttr(sceneReference, targetRoom);
-                    doSendApplyPKInvite(roomViewModel, targetSceneRef, targetRoom, gameId);
+                    doSendApplyPKInvite(roomViewModel, targetSceneRef, targetRoom, gameId, vendorid);
                 }
 
                 @Override
@@ -428,9 +463,9 @@ public class RoomViewModel extends ViewModel {
             });
     }
 
-    private void doSendApplyPKInvite(@NonNull RoomViewModel roomViewModel, @NonNull SceneReference sceneReference, RoomInfo targetRoom, @NonNull String gameId) {
+    private void doSendApplyPKInvite(@NonNull RoomViewModel roomViewModel, @NonNull SceneReference sceneReference, RoomInfo targetRoom, @NonNull String gameId, @NonNull String vendorid) {
         PKApplyInfo pkApplyInfo = new PKApplyInfo(roomViewModel.currentRoom.getUserId(), targetRoom.getUserId(), localUser.getName(), PKApplyInfo.APPLYING, gameId,
-                roomViewModel.currentRoom.getId(), targetRoom.getId());
+                roomViewModel.currentRoom.getId(), targetRoom.getId(), vendorid);
 
         sceneReference.update(GameConstants.PK_APPLY_INFO, pkApplyInfo, new Sync.DataItemCallback() {
             @Override
@@ -464,7 +499,7 @@ public class RoomViewModel extends ViewModel {
     private void onGameInfoChanged(@NonNull GameInfo gameInfo) {
         BaseUtil.logD("onGameShareInfoChanged");
         if (gameInfo.getStatus() == GameInfo.START)
-            roomGame = new AgoraGame(gameInfo.getGameId(), "", "");
+            roomGame = new AgoraGame(gameInfo.getGameId(), "", "", gameInfo.getVendorId());
         else
             roomGame = null;
         _gameShareInfo.postValue(gameInfo);
@@ -483,15 +518,15 @@ public class RoomViewModel extends ViewModel {
     private void onGameApplyInfoChanged(@NonNull GameApplyInfo currentGame) {
         BaseUtil.logD("onGameApplyInfoChanged:" + currentGame);
         if (currentGame.getStatus() == GameApplyInfo.PLAYING) {
-            roomGame = new AgoraGame(currentGame.getGameId(), "", "");
+            roomGame = new AgoraGame(currentGame.getGameId(), "", "", currentGame.getVendorId());
             PKApplyInfo applyInfo = _applyInfo.getValue();
             if (currentSceneRef != null && applyInfo != null) {
                 String targetRoomId = applyInfo.getRoomId().equals(currentRoom.getId()) ? applyInfo.getTargetRoomId() : currentRoom.getId();
-                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.START, targetRoomId, currentGame.getGameId()), null);
+                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.START, targetRoomId, currentGame.getGameId(), currentGame.getVendorId()), null);
             }
         } else if (currentGame.getStatus() == GameApplyInfo.END) {
             if (currentSceneRef != null)
-                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, "", currentGame.getGameId()), null);
+                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, "", currentGame.getGameId(), currentGame.getVendorId()), null);
         }
         _currentGame.postValue(currentGame);
     }
@@ -503,7 +538,7 @@ public class RoomViewModel extends ViewModel {
         GameApplyInfo gameApplyInfo = _currentGame.getValue();
         if (gameApplyInfo == null) return;
 
-        GameApplyInfo desiredGameApplyInfo = new GameApplyInfo(GameApplyInfo.END, gameApplyInfo.getGameId());
+        GameApplyInfo desiredGameApplyInfo = new GameApplyInfo(GameApplyInfo.END, gameApplyInfo.getGameId(), gameApplyInfo.getVendorId());
 
         PKApplyInfo pkApplyInfo = _applyInfo.getValue();
 
@@ -620,8 +655,10 @@ public class RoomViewModel extends ViewModel {
      */
     public void joinSubRoom(@NonNull RoomInfo subRoomInfo) {
 
+        tempSubRoom = subRoomInfo;
+
         RoomInfo tempRoom = _subRoomInfo.getValue();
-        if (tempRoom != null && !tempRoom.getId().equals(subRoomInfo.getId())){
+        if (tempRoom != null && !tempRoom.getId().equals(subRoomInfo.getId())) {
             leaveSubRoom();
         }
 
@@ -630,14 +667,7 @@ public class RoomViewModel extends ViewModel {
         connection.localUid = -Integer.parseInt(localUser.getUserId());
 
         ChannelMediaOptions options = new ChannelMediaOptions();
-//            public abstract int joinChannelEx(String token, RtcConnection connection, ChannelMediaOptions options, IRtcEngineEventHandler eventHandler);
-        rtcEngineEx.joinChannelEx("", connection, options, new IRtcEngineEventHandler() {
-            @Override
-            public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-                BaseUtil.logD("onJoinChannelSuccess:" + channel + uid);
-                _subRoomInfo.postValue(subRoomInfo);
-            }
-        });
+        rtcEngineEx.joinChannelEx("", connection, options, mySubEventHandler);
     }
 
     public void leaveSubRoom() {
@@ -674,23 +704,28 @@ public class RoomViewModel extends ViewModel {
         });
     }
 
-    private void configGameEngine(){
+    private void configGameEngine() {
         Context context = ((RtcEngineImpl) rtcEngineEx).getContext();
         LogConfig logConfig = new LogConfig(context.getExternalCacheDir().getAbsolutePath(), Level.CONFIG);
-        GameEngine.init(new GameContext(context,context.getString(R.string.game_app_id)
+        GameEngine.init(new GameContext(context, context.getString(R.string.game_app_id)
                 , localUser.getUserId(), GlobalViewModel.gameToken, logConfig
                 , new IGameEngineEventHandler() {
             @Override
             public void onSetOptionResult(int operationId, String option, boolean result, String reason) {
+                BaseUtil.logD("onSetOptionResult：operationId=" + operationId + "，option=" + option + "，result=" + result + "，reason=" + result);
             }
 
             @Override
             public void onGetOptionResult(int operationId, String option, boolean result, String outOptions) {
+                BaseUtil.logD("onGetOptionResult：operationId=" + operationId + "，option=" + option + "，result=" + result + "，reason=" + result + "，outOptions=" + outOptions);
                 if (option.equals(GameGetOptions.GET_GAME_LIST)) {
                     if (result) {
-                        AgoraGameList list = new Gson().fromJson(outOptions, new TypeToken<AgoraGameList>() {
+                        AgoraGameList list = GsonTool.toObject(outOptions, new TypeToken<AgoraGameList>() {
                         }.getType());
-                        gameList.setValue(list.getItems());
+                        if (null != list) {
+                            totalPage = list.getTotalPage();
+                            _gameList.setValue(list.getItems());
+                        }
                     } else {
                         BaseUtil.logD(outOptions);
                     }
@@ -699,11 +734,17 @@ public class RoomViewModel extends ViewModel {
 
             @Override
             public void onMessage(String messageId, String message) {
-                _viewStatus.postValue(new ViewStatus.Message(messageId + " -> " + message));
+                if (GameUtil.sudGameLoad(messageId, message)) {
+                    _viewStatus.postValue(new ViewStatus.Done());
+                } else if (GameUtil.sudGameExpired(messageId, message)) {
+                    _viewStatus.postValue(new ViewStatus.Update());
+                } else {
+                    _viewStatus.postValue(new ViewStatus.Message(messageId + " -> " + message));
+                }
             }
-        }));
+        }, GameUtil.huranEnv == GameEnvType.ENV_HURAN_TEST));
 
-//        GameEngine.getInstance().setOption(2, "set_game_center_test_env", String.valueOf(GameUtil.gameEnv == 1));
+        GameEngine.getInstance().setOption(2, "set_game_center_test_env", String.valueOf(GameUtil.gameEnv == GameEnvType.ENV_AGORA_TEST));
     }
 
     public void setupLocalPreview(@NonNull TextureView view) {
@@ -734,7 +775,7 @@ public class RoomViewModel extends ViewModel {
     //</editor-fold>
 
     //<editor-fold desc="Game">
-    public void startGame(@NonNull FrameLayout gameContainerFgRoom, @NonNull Rect safePadding) {
+    public void startGame(@Nullable FrameLayout gameContainerFgRoom, @Nullable WebView webView, @NonNull Rect safePadding) {
         if (roomGame == null) return;
         String roomId = null;
         if (amHost) {
@@ -748,14 +789,61 @@ public class RoomViewModel extends ViewModel {
         }
         if (roomId != null) {
             String language = Locale.getDefault().getLanguage().equalsIgnoreCase("zh") ? "zh-CN" : "en";
+            JoinGameRequiredBean joinGameRequiredBean = new JoinGameRequiredBean(safePadding, localUser.getName(), localUser.getAvatar(), amHost ? null : currentRoom.getUserId());
 
-            JoinGameRequiredBean joinGameRequiredBean = new JoinGameRequiredBean(safePadding, localUser.getName(), localUser.getAvatar(), amHost ? null :currentRoom.getUserId());
+            GameOptions gameOptions = new GameOptions(roomGame.getGameId(), roomId, localUser.getUserId(), getIdentification(roomId), language, GsonTool.objToJsonString(joinGameRequiredBean));
 
-            GameOptions gameOptions = new GameOptions(roomGame.getGameId(), roomId, localUser.getUserId(), getIdentification(roomId), language, new Gson().toJson(joinGameRequiredBean));
-
-            GameEngine.getInstance().loadGame(gameOptions, gameContainerFgRoom);
+            if (webView == null && gameContainerFgRoom != null)
+                doStartGame(gameOptions, gameContainerFgRoom);
+            else if (webView != null && gameContainerFgRoom == null)
+                doStartGame(gameOptions, webView);
+            else {
+                _viewStatus.postValue(new ViewStatus.Message("Wrong invoke, container and WebView both null."));
+            }
         }
+    }
 
+    //</editor-fold>
+
+    //<editor-fold desc="Sud Game">
+    public void startSudGame(@NonNull FrameLayout gameContainerFgRoom, @NonNull String gameCode, @NonNull String sudAppId, @NonNull String sudAppKey, @NonNull Rect safePadding) {
+        if (roomGame == null) return;
+        String roomId = null;
+        if (amHost) {
+            PKApplyInfo pkApplyInfo = _applyInfo.getValue();
+            if (pkApplyInfo != null)
+                roomId = pkApplyInfo.getRoomId().equals(currentRoom.getId()) ? pkApplyInfo.getTargetRoomId() : currentRoom.getId();
+        } else {
+            GameInfo gameShareInfo = _gameShareInfo.getValue();
+            if (gameShareInfo != null)
+                roomId = gameShareInfo.getRoomId();
+        }
+        if (roomId != null) {
+            String language = Locale.getDefault().getLanguage().equalsIgnoreCase("zh") ? "zh-CN" : "en";
+            SudAdditionalRequired additionalRequired = new SudAdditionalRequired(gameCode, sudAppId, sudAppKey, gameContainerFgRoom.getWidth(), gameContainerFgRoom.getHeight());
+            SudJoinGameRequiredBean joinGameRequiredBean = new SudJoinGameRequiredBean(safePadding, localUser.getName(), localUser.getAvatar(), amHost ? null : currentRoom.getUserId(), additionalRequired);
+
+            GameOptions gameOptions = new GameOptions(roomGame.getGameId(), roomId, localUser.getUserId(), getIdentification(roomId), language, roomGame.getVendorId(), GsonTool.objToJsonString(joinGameRequiredBean));
+
+            Activity activity = GameUtil.getActivityFromView(gameContainerFgRoom);
+            if (activity != null)
+                doStartGame(gameOptions, activity);
+            else {
+                _viewStatus.postValue(new ViewStatus.Message("Wrong invoke, activity is null."));
+            }
+        }
+    }
+
+    private void doStartGame(@NonNull GameOptions options, @NonNull WebView webView) {
+        GameEngine.getInstance().loadGame(options, webView);
+    }
+
+    private void doStartGame(@NonNull GameOptions options, @NonNull ViewGroup viewGroup) {
+        GameEngine.getInstance().loadGame(options, viewGroup);
+    }
+
+    private void doStartGame(@NonNull GameOptions options, @NonNull Activity activity) {
+        GameEngine.getInstance().loadGame(options, activity);
     }
 
     /**
@@ -779,9 +867,20 @@ public class RoomViewModel extends ViewModel {
     }
 
     public void fetchGameList() {
-        BaseUtil.logD("fetchGameList");
-        FetchGameListRequiredBean bean = new FetchGameListRequiredBean(10, 1);
-        GameEngine.getInstance().getOption(0, GameGetOptions.GET_GAME_LIST, new Gson().toJson(bean));
+        currentPage = 1;
+        _gameList.setValue(new ArrayList<>());
+        BaseUtil.logD("fetchGameList page " + currentPage);
+        FetchGameListRequiredBean bean = new FetchGameListRequiredBean(GAME_LIMIT, currentPage);
+        GameEngine.getInstance().getOption(0, GameGetOptions.GET_GAME_LIST, GsonTool.objToJsonString(bean));
+    }
+
+    public void fetchGameListMore() {
+        currentPage++;
+        if (totalPage >= currentPage) {
+            BaseUtil.logD("fetchGameList more page " + currentPage);
+            FetchGameListRequiredBean bean = new FetchGameListRequiredBean(GAME_LIMIT, currentPage);
+            GameEngine.getInstance().getOption(0, GameGetOptions.GET_GAME_LIST, GsonTool.objToJsonString(bean));
+        }
     }
 
     //</editor-fold>
@@ -791,5 +890,64 @@ public class RoomViewModel extends ViewModel {
         default void onFail(SyncManagerException exception) {
 
         }
+    }
+
+    public View getGameView() {
+        return GameEngine.getInstance().getGameView();
+    }
+
+    public void updateGameCode(String appId) {
+        getGameCode(appId, new GameGetCodeListener() {
+            @Override
+            public void onSuccess(String code) {
+                Map<String, Object> jsonData = new HashMap<>(4);
+                jsonData.put("game_code", code);
+                SudGameMessage<Map<String, Object>> message = new SudGameMessage<>(GameConstants.COMMON_SELF_UPDATE_CODE, jsonData);
+                // operationId 任意值
+                GameEngine.getInstance().setOption(2, GameSetOptions.GAME_STATE, GsonTool.objToJsonString(message));
+            }
+
+            @Override
+            public void onFailed() {
+            }
+        });
+
+    }
+
+    public void getGameCode(String appId, GameGetCodeListener listener) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("user_id", localUser.getUserId());
+        params.put("app_id", appId);
+        GameHttpServer.get().enqueuePost("https://txy.jyanedu.com/sud/login", new HashMap<>(), params,
+                SudLoginBean.class, new GameHttpServer.IHttpCallback<SudLoginBean>() {
+                    @Override
+                    public void onSuccess(String bodyString, SudLoginBean data) {
+                        if (data.getRet_code() == 0 && null != data.getData()) {
+                            listener.onSuccess(data.getData().getCode());
+                        } else {
+                            listener.onFailed();
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int code, String message) {
+                        listener.onFailed();
+                    }
+                });
+    }
+
+    /**
+     * 游戏login(getCode)监听
+     */
+    public interface GameGetCodeListener {
+        /**
+         * 成功
+         */
+        void onSuccess(String code);
+
+        /**
+         * 失败
+         */
+        void onFailed();
     }
 }

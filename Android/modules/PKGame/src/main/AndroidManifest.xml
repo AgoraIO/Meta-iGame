@@ -22,6 +22,17 @@
             android:configChanges="orientation|keyboardHidden|screenLayout"
             android:theme="@style/game_AppTheme"
             android:windowSoftInputMode="adjustUnspecified" />
+
+<!--          authorities 指定您希望用于由 FileProvider 生成的内容 URI 的 URI 授权-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="io.agora.game.engine.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

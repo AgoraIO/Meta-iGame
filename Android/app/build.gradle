@@ -10,8 +10,8 @@ android {
         applicationId "io.agora.game.engine"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "v1 stage2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk{
@@ -21,7 +21,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            buildConfigField "Boolean", "isInternal", "${isInternal.toBoolean()}"
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField "Boolean", "isInternal", "${isInternal.toBoolean()}"
+            debuggable true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,7 +44,12 @@ android {
     }
     
     applicationVariants.all { variant ->
-        variant.outputs.all {
+        variant.outputs.all { output ->
+            if(isInternal.toBoolean()) {
+                output.setVersionNameOverride("${versionName}-Internal")
+            }else {
+                output.setVersionNameOverride("${versionName}-Customer")
+            }
             outputFileName = "SceneExample-${versionName}-${variant.buildType.name}.apk"
         }
     }
@@ -45,6 +58,7 @@ android {
 dependencies {
     // Project
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
     implementation project(':libs:base-library')
 
     runtimeOnly(project(':modules:PKGame'))

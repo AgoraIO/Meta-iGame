@@ -1,5 +1,8 @@
 package io.agora.scene.rtegame.ui.room;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -13,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
@@ -30,6 +34,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.button.MaterialButton;
 
 import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
@@ -64,6 +69,8 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
     private boolean aMHost;
     private boolean shouldShowInputBox = false;
     private AlertDialog currentDialog;
+
+    private final String preLoadedURL = "file:///android_asset/index.html";
 
     @Nullable
     @Override
@@ -105,7 +112,7 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
     private void initView() {
         Glide.with(this).load(GameUtil.getBgdByRoomBgdId(currentRoom.getBackgroundId()))
                 .centerCrop().into(mBinding.layoutRoomInfo.avatarHostFgRoom);
-        mBinding.layoutRoomInfo.nameHostFgRoom.setText(getString(R.string.game_format_two_string, currentRoom.getRoomName() , currentRoom.getId()));
+        mBinding.layoutRoomInfo.nameHostFgRoom.setText(getString(R.string.game_format_two_string, currentRoom.getRoomName(), currentRoom.getId()));
 
         // config game view
         new Handler(Looper.getMainLooper()).post(() -> {
@@ -157,7 +164,17 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
             return false;
         });
         // "更多"弹窗
-        mBinding.btnMoreFgRoom.setOnClickListener(v -> new MoreDialog().show(getChildFragmentManager(), MoreDialog.TAG));
+        mBinding.btnMoreFgRoom.setOnClickListener(v -> {
+            new MoreDialog().setLocalVideoStreamListener((button, isMute) -> {
+                LiveHostCardView hostView = mBinding.hostContainerFgRoom.hostView;
+                if (hostView==null) return;
+                if (isMute) {
+                    hostView.setVisibility(View.INVISIBLE);
+                } else {
+                    hostView.setVisibility(View.VISIBLE);
+                }
+            }).show(getChildFragmentManager(), MoreDialog.TAG);
+        });
 //        mBinding.btnMoreFgRoom.setOnClickListener(v -> GameEngine.getInstance().setOption(2, GameSetOptions.GAME_STATE, "{\"state\":\"app_common_self_ready\",\"data\":{\"isReady\":true}}"));
         // "游戏"弹窗
         mBinding.btnGameFgRoom.setOnClickListener(v -> new GameListDialog().show(getChildFragmentManager(), GameListDialog.TAG));
@@ -168,7 +185,7 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
         // "礼物"弹窗
         mBinding.btnDonateFgRoom.setOnClickListener(v -> new DonateDialog().show(getChildFragmentManager(), DonateDialog.TAG));
         // "退出直播间"按钮点击事件
-        mBinding.btnExitFgRoom.setOnClickListener(v -> requireActivity().onBackPressed());
+        mBinding.btnExitFgRoom.setOnClickListener(v -> { mViewModel.exitGame(); requireActivity().onBackPressed();});
         mBinding.editTextFgRoom.setShowSoftInputOnFocus(true);
         // 显示键盘按钮
         mBinding.inputFgRoom.setOnClickListener(v -> {
@@ -195,22 +212,15 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
             else if (viewStatus instanceof ViewStatus.Error) {
                 BaseUtil.toast(requireContext(), ((ViewStatus.Error) viewStatus).msg);
                 findNavController().popBackStack();
+            } else if (viewStatus instanceof ViewStatus.Done) {
+                View gameView = mViewModel.getGameView();
+                if (gameView != null) {
+                    mBinding.gameContainerFgRoom.addView(gameView);
+                }
+            } else if (viewStatus instanceof ViewStatus.Update){
+                mViewModel.updateGameCode(getString(R.string.game_sud_app_id));
             }
         });
-
-    }
-
-    private void onGameShareInfoChanged(GameInfo gameInfo) {
-        if (gameInfo == null) return;
-        if (gameInfo.getStatus() == GameInfo.START) {
-            insertNewMessage("加载远端游戏画面");
-            onLayoutTypeChanged(LiveHostLayout.Type.DOUBLE_IN_GAME);
-            mViewModel.startGame(mBinding.gameContainerFgRoom, getSafePaddingAsRect());
-        } else if (gameInfo.getStatus() == GameInfo.END) {
-            insertNewMessage("停止远端游戏画面");
-            mViewModel.exitGame();
-            onLayoutTypeChanged(atMost(LiveHostLayout.Type.DOUBLE));
-        }
     }
 
     //<editor-fold desc="邀请 相关">
@@ -257,13 +267,32 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
 
         if (currentGame.getStatus() == GameApplyInfo.PLAYING) {
             onLayoutTypeChanged(LiveHostLayout.Type.DOUBLE_IN_GAME);
-            mViewModel.startGame(mBinding.gameContainerFgRoom, getSafePaddingAsRect());
+            startGame(currentGame.getVendorId());
         } else if (currentGame.getStatus() == GameApplyInfo.END) {
+            onGameStoppedForCustomWebView();
             mViewModel.exitGame();
             onLayoutTypeChanged(atMost(LiveHostLayout.Type.DOUBLE));
         }
     }
 
+    /**
+     * 仅观众调用
+     *
+     * @param gameInfo
+     */
+    private void onGameShareInfoChanged(GameInfo gameInfo) {
+        if (gameInfo == null) return;
+        if (gameInfo.getStatus() == GameInfo.START) {
+            insertNewMessage("加载远端游戏画面");
+            onLayoutTypeChanged(LiveHostLayout.Type.DOUBLE_IN_GAME);
+            startGame(gameInfo.getVendorId());
+        } else if (gameInfo.getStatus() == GameInfo.END) {
+            insertNewMessage("停止远端游戏画面");
+            onGameStoppedForCustomWebView();
+            mViewModel.exitGame();
+            onLayoutTypeChanged(atMost(LiveHostLayout.Type.DOUBLE));
+        }
+    }
     //</editor-fold>
 
     /**
@@ -273,36 +302,37 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
     private void onGiftUpdated(GiftInfo giftInfo) {
         if (giftInfo == null) return;
 
-        mBinding.giftImageFgRoom.setVisibility(View.VISIBLE);
+
 
         String giftDesc = GiftUtil.getGiftDesc(requireContext(), giftInfo);
         if (giftDesc != null) insertNewMessage(giftDesc);
-
-        if (!aMHost) {
-            int giftId = GiftUtil.getGiftIdFromGiftInfo(requireContext(), giftInfo);
-            Glide.with(this).asGif().load(GiftUtil.getGifByGiftId(giftId))
-                    .listener(new RequestListener<GifDrawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<GifDrawable> target, boolean isFirstResource) {
-                            mBinding.giftImageFgRoom.setVisibility(View.GONE);
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target, DataSource dataSource, boolean isFirstResource) {
-                            resource.setLoopCount(1);
-                            resource.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
-                                @Override
-                                public void onAnimationEnd(Drawable drawable) {
-                                    super.onAnimationEnd(drawable);
-                                    mBinding.giftImageFgRoom.setVisibility(View.GONE);
-                                }
-                            });
-                            return false;
-                        }
-                    })
-                    .into(mBinding.giftImageFgRoom);
-        }
+        // 屏蔽礼物动效
+//        if (!aMHost && GameUtil.showGiftEffect) {
+//            mBinding.giftImageFgRoom.setVisibility(View.VISIBLE);
+//            int giftId = GiftUtil.getGiftIdFromGiftInfo(requireContext(), giftInfo);
+//            Glide.with(this).asGif().load(GiftUtil.getGifByGiftId(giftId))
+//                    .listener(new RequestListener<GifDrawable>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<GifDrawable> target, boolean isFirstResource) {
+//                            mBinding.giftImageFgRoom.setVisibility(View.GONE);
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target, DataSource dataSource, boolean isFirstResource) {
+//                            resource.setLoopCount(1);
+//                            resource.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+//                                @Override
+//                                public void onAnimationEnd(Drawable drawable) {
+//                                    super.onAnimationEnd(drawable);
+//                                    mBinding.giftImageFgRoom.setVisibility(View.GONE);
+//                                }
+//                            });
+//                            return false;
+//                        }
+//                    })
+//                    .into(mBinding.giftImageFgRoom);
+//        }
     }
 
     /**
@@ -379,7 +409,7 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
     }
 
     private void onLayoutTypeChanged(LiveHostLayout.Type type) {
-        BaseUtil.logD( "onLayoutTypeChanged:" + type.ordinal());
+        BaseUtil.logD("onLayoutTypeChanged:" + type.ordinal());
         mBinding.hostContainerFgRoom.setType(type);
 
 //        确保游戏正常结束
@@ -405,12 +435,12 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
 
     /**
      * 至少在这个状态
-     *
+     * <p>
      * 连麦主播上线
      * 在游戏 {@link LiveHostLayout.Type#DOUBLE_IN_GAME}
      * 不在游戏 {@link LiveHostLayout.Type#DOUBLE}
      */
-    private LiveHostLayout.Type atLeast(@NonNull LiveHostLayout.Type type){
+    private LiveHostLayout.Type atLeast(@NonNull LiveHostLayout.Type type) {
         if (type.ordinal() < mBinding.hostContainerFgRoom.getType().ordinal())
             return mBinding.hostContainerFgRoom.getType();
         else return type;
@@ -422,7 +452,7 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
      * 在连麦 {@link LiveHostLayout.Type#DOUBLE}
      * 不在连麦 {@link LiveHostLayout.Type#HOST_ONLY}
      */
-    private LiveHostLayout.Type atMost(@NonNull LiveHostLayout.Type type){
+    private LiveHostLayout.Type atMost(@NonNull LiveHostLayout.Type type) {
         if (type.ordinal() > mBinding.hostContainerFgRoom.getType().ordinal())
             return mBinding.hostContainerFgRoom.getType();
         else return type;
@@ -454,10 +484,48 @@ public class RoomFragment extends BaseFragment<GameFragmentRoomBinding> {
         });
     }
 
-    private Rect getSafePaddingAsRect(){
+    private Rect getSafePaddingAsRect() {
         Rect rect = new Rect();
 //        rect.set(0, mBinding.layoutRoomInfo.getRoot().getBottom(), 0, mBinding.getRoot().getMeasuredHeight() - mBinding.recyclerViewFgRoom.getTop());
         return rect;
     }
 
+    private void startGame(String vendorId) {
+        if (GameUtil.isSud(vendorId)) {
+            // 忽然
+            mViewModel.getGameCode(getString(R.string.game_sud_app_id), new RoomViewModel.GameGetCodeListener() {
+                @Override
+                public void onSuccess(String code) {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        mViewModel.startSudGame(mBinding.gameContainerFgRoom, code, getString(R.string.game_sud_app_id), getString(R.string.game_sdu_app_key), getSafePaddingAsRect());
+                    }
+                }
+
+                @Override
+                public void onFailed() {}
+            });
+        } else {
+            if (GameUtil.usingSDKWebView)
+                mViewModel.startGame(mBinding.gameContainerFgRoom, null, getSafePaddingAsRect());
+            else {
+                WebView webView = generateWebView(requireContext());
+                mBinding.gameContainerFgRoom.addView(webView);
+                mViewModel.startGame(null, webView, getSafePaddingAsRect());
+            }
+        }
+    }
+
+    private void onGameStoppedForCustomWebView() {
+        mBinding.gameContainerFgRoom.removeAllViews();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private WebView generateWebView(Context context) {
+        WebView webView = new WebView(context);
+        webView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl(preLoadedURL);
+        return webView;
+    }
 }

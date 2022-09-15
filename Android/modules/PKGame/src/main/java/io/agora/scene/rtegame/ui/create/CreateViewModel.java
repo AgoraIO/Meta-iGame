@@ -16,6 +16,7 @@ import io.agora.scene.rtegame.bean.LocalUser;
 import io.agora.scene.rtegame.bean.RoomInfo;
 import io.agora.scene.rtegame.util.Event;
 import io.agora.scene.rtegame.util.GameUtil;
+import io.agora.syncmanager.rtm.ISyncManager;
 import io.agora.syncmanager.rtm.Sync;
 import io.agora.syncmanager.rtm.SyncManagerException;
 
@@ -57,6 +58,7 @@ public class CreateViewModel extends ViewModel {
 
                 @Override
                 public void onFail(SyncManagerException exception) {
+                    exception.printStackTrace();
                     _isRoomCreateSuccess.setValue(new Event<>(false));
                 }
             });

@@ -9,6 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.button.MaterialButton;
+
 import io.agora.example.base.BaseBottomSheetDialogFragment;
 import io.agora.scene.rtegame.databinding.GameDialogMoreBinding;
 import io.agora.scene.rtegame.ui.room.RoomViewModel;
@@ -20,8 +22,12 @@ import io.agora.scene.rtegame.util.GameUtil;
 public class MoreDialog extends BaseBottomSheetDialogFragment<GameDialogMoreBinding> {
     public static final String TAG = "MoreDialog";
     private RoomViewModel roomViewModel;
+    private MaterialButton.OnCheckedChangeListener localVideoStreamListener;
 
-
+    public MoreDialog setLocalVideoStreamListener(MaterialButton.OnCheckedChangeListener listener) {
+        this.localVideoStreamListener = listener;
+        return this;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -46,8 +52,11 @@ public class MoreDialog extends BaseBottomSheetDialogFragment<GameDialogMoreBind
         // 开启/关闭摄像头
         mBinding.btnCameraDialogMore.setChecked(!roomViewModel.isLocalVideoMuted);
         mBinding.btnCameraDialogMore.addOnCheckedChangeListener((button, isChecked) -> {
-            if (button.isPressed())
+            if (button.isPressed()) {
                 roomViewModel.muteLocalVideoStream(!isChecked);
+                if (localVideoStreamListener != null) localVideoStreamListener.onCheckedChanged(button, !isChecked);
+            }
+
         });
         // 开启/关闭麦克风
         mBinding.btnMicDialogMore.setChecked(!roomViewModel.isLocalMicMuted);

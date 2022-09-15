@@ -34,4 +34,6 @@ public class ViewStatus {
             this.showLoading = showLoading;
         }
     }
+
+    public static class Update extends ViewStatus{}
 }

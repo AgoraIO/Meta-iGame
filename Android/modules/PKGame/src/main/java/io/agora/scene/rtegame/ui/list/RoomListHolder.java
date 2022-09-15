@@ -2,6 +2,7 @@ package io.agora.scene.rtegame.ui.list;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +31,6 @@ public class RoomListHolder extends BaseRecyclerViewAdapter.BaseViewHolder<GameI
                 boolean amHost = room.getUserId().equals(GlobalViewModel.localUser.getUserId());
                 mBinding.ownerItemRoomList.setTextColor(amHost ? ColorStateList.valueOf(Color.MAGENTA) : mBinding.nameItemRoomList.getTextColors());
             }
-
         }
     }
 }

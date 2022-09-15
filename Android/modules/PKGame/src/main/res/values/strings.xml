@@ -8,6 +8,14 @@
     <string name="game_error_desc">%s初始化出错</string>
     <string name="game_error_happened_click_to_refresh">出错了，再试一次</string>
     <!--    Room List-->
+    <string name="game_info">提示</string>
+    <string name="game_info_message"><![CDATA[
+        <p> APP 版本：%s</p>
+        <p>Game 版本：%s</p>
+        <p> RTC 版本：%s</p>
+        <br/>
+        ]]>
+    </string>
     <string name="game_please_create_a_room">请创建一个直播间</string>
     <string name="game_desc_create_room">创建直播间</string>
     <string name="game_desc_room_list_empty">房间列表为空</string>
@@ -17,6 +25,16 @@
     <string name="game_set_game_env">设置游戏SDK环境</string>
     <string name="game_official_env">正式环境</string>
     <string name="game_test_env">测试环境</string>
+    <string name="game_agora_official_env">声网正式环境</string>
+    <string name="game_agora_test_env">声网测试环境</string>
+    <string name="game_huran_official_env">忽然正式环境</string>
+    <string name="game_huran_test_env">忽然测试环境</string>
+    <string name="game_using_custom_web_view">自定义 WebView</string>
+    <string name="game_gift_effect">礼物效果</string>
+    <string name="game_show_avatar">捐赠者头像</string>
+    <string name="game_show_nickname">捐赠者昵称</string>
+    <string name="game_check_log">查看游戏 Log</string>
+    <string name="game_log_toast">/sdcard/Android/data/%s/cache/AGORA_GAME_SDK.log</string>
 
     <!--    Create Room-->
     <string name="game_flip_camera">翻转相机</string>

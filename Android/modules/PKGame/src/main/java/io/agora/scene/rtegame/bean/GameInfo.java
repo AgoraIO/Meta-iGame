@@ -12,11 +12,14 @@ public class GameInfo {
     private final String roomId;
     // 游戏ID
     private final String gameId;
+    //vendorid
+    private final String vendorId;
 
-    public GameInfo(int status, @NonNull String roomId,@NonNull String gameId) {
+    public GameInfo(int status, @NonNull String roomId,@NonNull String gameId,@NonNull String vendorId) {
         this.status = status;
         this.roomId = roomId;
         this.gameId = gameId;
+        this.vendorId = vendorId ;
     }
 
     public void setStatus(int status) {
@@ -36,6 +39,10 @@ public class GameInfo {
     public String getGameId() {
         return gameId;
     }
+    @NonNull
+    public String getVendorId() {
+        return vendorId;
+    }
 
     @NonNull
     @Override
@@ -44,6 +51,7 @@ public class GameInfo {
                 "status=" + status +
                 ", roomId='" + roomId + '\'' +
                 ", gameId='" + gameId + '\'' +
+                ", vendorId='" + vendorId + '\'' +
                 '}';
     }
 }

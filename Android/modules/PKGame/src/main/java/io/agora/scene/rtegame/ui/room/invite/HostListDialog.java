@@ -45,6 +45,9 @@ public class HostListDialog extends BaseBottomSheetDialogFragment<GameDialogHost
     @NonNull
     public String desiredGameId = "";
 
+    @NonNull
+    public String desiredVendorId = "";
+
     private RoomViewModel roomViewModel;
     // 用于获取可PK主播
     private RoomListViewModel roomListViewModel;
@@ -54,8 +57,9 @@ public class HostListDialog extends BaseBottomSheetDialogFragment<GameDialogHost
     public HostListDialog() {
     }
 
-    public HostListDialog(@NonNull String desiredGameId) {
+    public HostListDialog(@NonNull String desiredGameId, @NonNull String desiredVendorId) {
         this.desiredGameId = desiredGameId;
+        this.desiredVendorId = desiredVendorId ;
     }
 
     @Override
@@ -166,7 +170,7 @@ public class HostListDialog extends BaseBottomSheetDialogFragment<GameDialogHost
     @Override
     public void onItemClick(@NonNull RoomInfo targetRoom, @NonNull View view, int position, long viewType) {
         if (view instanceof MaterialButton){
-            roomViewModel.sendApplyPKInvite(roomViewModel, targetRoom, desiredGameId);
+            roomViewModel.sendApplyPKInvite(roomViewModel, targetRoom, desiredGameId, desiredVendorId);
         }
     }
 }

@@ -133,6 +133,12 @@ public class BaseRecyclerViewAdapter<B extends ViewBinding, T, H extends BaseRec
         notifyDataSetChanged();
     }
 
+    public void addItems(@NonNull List<T> dataList) {
+        int index = this.dataList.size();
+        this.dataList.addAll(dataList);
+        notifyItemRangeChanged(index, this.dataList.size() - index);
+    }
+
     public void addItem(@NonNull T data) {
 
         int index = dataList.indexOf(data);

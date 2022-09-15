@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--    主要用于音视频通话-->
-    <string name="rtc_app_id" translatable="false"></string>
+    <string name="rtc_app_id" translatable="false">YOUR RTC APP ID</string>
+    <!--    用于游戏-->
+    <string name="game_app_id" translatable="false">YOUR GAME APP ID</string>
+    <string name="game_app_certificate" translatable="false">YOUR GAME APP CERTIFICATE</string>
 
-<!--    用于游戏-->
-    <string name="game_app_id" translatable="false"></string>
-    <string name="game_app_certificate" translatable="false"></string>
+    <!-- 忽然 -->
+    <string name="game_sud_app_id" translatable="false">YOUR GAME SUD APP ID</string>
+    <string name="game_sdu_app_key" translatable="false">YOUR GAME SUD APP KEY</string>
 </resources>

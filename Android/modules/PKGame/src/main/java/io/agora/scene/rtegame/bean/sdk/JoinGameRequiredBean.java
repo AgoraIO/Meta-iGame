@@ -5,6 +5,8 @@ import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import io.agora.scene.rtegame.util.GameUtil;
+
 public class JoinGameRequiredBean {
     private final int left;
     private final int top;
@@ -16,7 +18,7 @@ public class JoinGameRequiredBean {
     private final String avatar;
     @Nullable
     private final String to_user;
-    private final int avatar_type = 2;
+    private final int avatar_type = GameUtil.avatarType;
     private final int time_limit = 360;
     private final int show_join;
     private final int show_ready;

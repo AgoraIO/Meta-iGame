@@ -1,5 +1,8 @@
 package io.agora.scene.rtegame.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -19,21 +22,37 @@ import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.shape.ShapeAppearanceModel;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import io.agora.example.base.BaseUtil;
+import io.agora.gamesdk.annotations.GameSetOptions;
 import io.agora.scene.rtegame.GlobalViewModel;
 import io.agora.scene.rtegame.GlobalViewModelFactory;
 import io.agora.scene.rtegame.R;
-import io.agora.scene.rtegame.bean.AgoraGame;
 import io.agora.scene.rtegame.bean.RoomInfo;
+import io.agora.scene.rtegame.bean.sdk.SudGameMessage;
 import io.agora.syncmanager.rtm.Scene;
 
 public class GameUtil {
 
-    public static int gameEnv = 1;
+    // 声网环境默认正式
+    @GameEnvType
+    public static int gameEnv = GameEnvType.ENV_AGORA_OFFICIAL;
+    // 忽然环境默认测试
+    @GameEnvType
+    public static int huranEnv = GameEnvType.ENV_HURAN_OFFICIAL;
+
+    public static boolean showGiftEffect = true;
+    public static boolean usingSDKWebView = true;
+    //    0-无头像昵称(默认），1-有昵称无头像，2-有昵称有头像，3-无眤称有头像
+    public static int avatarType = 2;
+
+    public static boolean showAvatar = true;
+    public static boolean showNickname = true;
 
     private static final String[] avatarList = {
             "https://terrigen-cdn-dev.marvel.com/content/prod/1x/012scw_ons_crd_02.jpg",
@@ -44,30 +63,30 @@ public class GameUtil {
             "https://terrigen-cdn-dev.marvel.com/content/prod/1x/004tho_ons_crd_03.jpg"};
 
     @NonNull
-    public static String randomAvatar(){
+    public static String randomAvatar() {
         int index = new Random().nextInt(10000);
         return avatarList[index % avatarList.length];
     }
 
 
     private static final String[] nameList = {
-           "Tokyo",
-           "Delhi",
-           "Shanghai",
-           "Sao Paulo",
-           "Mexico City",
-           "Cairo",
-           "Dhaka",
-           "Mumbai",
-           "Beijing",
-           "Osaka",
-           "Aruba",
-           "Jamaica",
-           "Bermuda",
-           "Bahama",
-           "Key Largo",
-           "Montego",
-           "Kokomo",
+            "Tokyo",
+            "Delhi",
+            "Shanghai",
+            "Sao Paulo",
+            "Mexico City",
+            "Cairo",
+            "Dhaka",
+            "Mumbai",
+            "Beijing",
+            "Osaka",
+            "Aruba",
+            "Jamaica",
+            "Bermuda",
+            "Bahama",
+            "Key Largo",
+            "Montego",
+            "Kokomo",
     };
 
     @DrawableRes
@@ -111,8 +130,8 @@ public class GameUtil {
     }
 
     @DrawableRes
-    public static int getGameBgdByGameId(int gameId){
-            return R.drawable.game_pic_bgd_game_1;
+    public static int getGameBgdByGameId(int gameId) {
+        return R.drawable.game_pic_bgd_game_1;
     }
 
     @NonNull
@@ -141,7 +160,7 @@ public class GameUtil {
     }
 
 
-    public static void setBottomMarginForConstraintLayoutChild(@NonNull View view,int desiredBottom){
+    public static void setBottomMarginForConstraintLayoutChild(@NonNull View view, int desiredBottom) {
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) view.getLayoutParams();
         if (lp != null) {
             lp.bottomMargin = desiredBottom;
@@ -198,4 +217,63 @@ public class GameUtil {
         return startValue + (fraction * (endValue - startValue));
     }
 
+    public static boolean isSud(String vendorId) {
+        return "10021".equals(vendorId);
+    }
+
+    public static Activity getActivityFromView(View view) {
+        if (null != view) {
+            Context context = view.getContext();
+            while (context instanceof ContextWrapper) {
+                if (context instanceof Activity) {
+                    return (Activity) context;
+                }
+                context = ((ContextWrapper) context).getBaseContext();
+            }
+        }
+        return null;
+    }
+
+    public static SudGameMessage<Map<String, Object>> sudGameState(String messageId, String message) {
+        SudGameMessage<Map<String, Object>> gameMessage = null;
+        if (GameSetOptions.GAME_STATE.equals(messageId)) {
+            gameMessage = GsonTool.toObject(message, new TypeToken<SudGameMessage<Map<String, Object>>>() {
+            }.getType());
+        }
+        return gameMessage;
+    }
+
+    public static boolean sudGameLoad(String messageId, String message) {
+        boolean isGameLoadSuccess = false;
+        SudGameMessage<Map<String, Object>> gameMessage = sudGameState(messageId, message);
+        if (null != gameMessage) {
+            if (GameConstants.GAME_COMMON_LOAD.equals(gameMessage.getState())) {
+                Map<String, Object> stateData = gameMessage.getData();
+                Object value = stateData.get("code");
+                int code = parseInt(value, -1);
+                isGameLoadSuccess = code == 0;
+            }
+        }
+        return isGameLoadSuccess;
+    }
+
+    public static boolean sudGameExpired(String messageId, String message) {
+        boolean isGameCodeExpired = false;
+        SudGameMessage<Map<String, Object>> gameMessage = sudGameState(messageId, message);
+        if (null != gameMessage) {
+            if (GameConstants.GAME_COMMON_EXPIRED.equals(gameMessage.getState())) {
+                isGameCodeExpired = true;
+            }
+        }
+        return isGameCodeExpired;
+    }
+
+    private static int parseInt(Object value, int defaultValue) {
+        if (value == null) return defaultValue;
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
 }

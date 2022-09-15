@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2639A711282E0B9C0037E056 /* TokenBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2639A6FC282E0B9C0037E056 /* TokenBuilder.m */; };
-		2639A712282E0B9C0037E056 /* RtmTokenTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2639A700282E0B9C0037E056 /* RtmTokenTool.mm */; };
-		2639A713282E0B9C0037E056 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2639A704282E0B9C0037E056 /* md5.cpp */; };
+		2612DE20282A17130049998A /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2612DE1F282A17130049998A /* SettingViewController.swift */; };
+		2612DE24282A509D0049998A /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 2612DE23282A509D0049998A /* index.html */; };
+		2619EE7128892EF400BB1855 /* GameNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2619EE7028892EF400BB1855 /* GameNetworkManager.m */; };
+		26D0CB20283DFE4E0073498A /* TokenBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D0CB0B283DFE4E0073498A /* TokenBuilder.m */; };
+		26D0CB21283DFE4E0073498A /* RtmTokenTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 26D0CB0F283DFE4E0073498A /* RtmTokenTool.mm */; };
+		26D0CB22283DFE4E0073498A /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26D0CB13283DFE4E0073498A /* md5.cpp */; };
 		35F031612D955CBE619EC035 /* Pods_AgoraGameEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8D8E64119C8D6A2ABAD8308 /* Pods_AgoraGameEngine.framework */; };
 		E710AE2F27A0F23300124356 /* ChangeRoomBgView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E710AE2E27A0F23300124356 /* ChangeRoomBgView.swift */; };
 		E7440E2C277420F200CBF4D8 /* LiveBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7440E2B277420F200CBF4D8 /* LiveBaseView.swift */; };
@@ -101,26 +104,30 @@
 /* Begin PBXFileReference section */
 		20C581EEB5F90DA480F83A68 /* Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension(Socket)/Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig"; sourceTree = "<group>"; };
 		230FE7E96C947163B0353086 /* Pods-AgoraGameEngine.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraGameEngine.release.xcconfig"; path = "Target Support Files/Pods-AgoraGameEngine/Pods-AgoraGameEngine.release.xcconfig"; sourceTree = "<group>"; };
-		2639A6FC282E0B9C0037E056 /* TokenBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TokenBuilder.m; sourceTree = "<group>"; };
-		2639A6FD282E0B9C0037E056 /* TokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TokenBuilder.h; sourceTree = "<group>"; };
-		2639A6FF282E0B9C0037E056 /* RtmTokenTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtmTokenTool.h; sourceTree = "<group>"; };
-		2639A700282E0B9C0037E056 /* RtmTokenTool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RtmTokenTool.mm; sourceTree = "<group>"; };
-		2639A702282E0B9C0037E056 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
-		2639A704282E0B9C0037E056 /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cpp; sourceTree = "<group>"; };
-		2639A705282E0B9C0037E056 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
-		2639A706282E0B9C0037E056 /* DynamicKey5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey5.h; sourceTree = "<group>"; };
-		2639A707282E0B9C0037E056 /* Packer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packer.h; sourceTree = "<group>"; };
-		2639A708282E0B9C0037E056 /* generatorSignalToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = generatorSignalToken.h; sourceTree = "<group>"; };
-		2639A709282E0B9C0037E056 /* AccessToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessToken.h; sourceTree = "<group>"; };
-		2639A70A282E0B9C0037E056 /* DynamicKey2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey2.h; sourceTree = "<group>"; };
-		2639A70B282E0B9C0037E056 /* RtmTokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtmTokenBuilder.h; sourceTree = "<group>"; };
-		2639A70C282E0B9C0037E056 /* DynamicKey3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey3.h; sourceTree = "<group>"; };
-		2639A70D282E0B9C0037E056 /* generatorSignalToken-Linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "generatorSignalToken-Linux.h"; sourceTree = "<group>"; };
-		2639A70E282E0B9C0037E056 /* RtcTokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtcTokenBuilder.h; sourceTree = "<group>"; };
-		2639A70F282E0B9C0037E056 /* DynamicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey.h; sourceTree = "<group>"; };
-		2639A710282E0B9C0037E056 /* DynamicKey4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey4.h; sourceTree = "<group>"; };
-		2639A71D282E0CEC0037E056 /* AgoraGameEngine-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AgoraGameEngine-Bridging-Header.h"; sourceTree = "<group>"; };
+		2612DE1F282A17130049998A /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		2612DE23282A509D0049998A /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		2619EE6F28892EF400BB1855 /* GameNetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameNetworkManager.h; sourceTree = "<group>"; };
+		2619EE7028892EF400BB1855 /* GameNetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameNetworkManager.m; sourceTree = "<group>"; };
 		269EEA1527F6ECD000F9F8ED /* AgoraGameEngineKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AgoraGameEngineKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		26D0CB0B283DFE4E0073498A /* TokenBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TokenBuilder.m; sourceTree = "<group>"; };
+		26D0CB0C283DFE4E0073498A /* TokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TokenBuilder.h; sourceTree = "<group>"; };
+		26D0CB0E283DFE4E0073498A /* RtmTokenTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtmTokenTool.h; sourceTree = "<group>"; };
+		26D0CB0F283DFE4E0073498A /* RtmTokenTool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RtmTokenTool.mm; sourceTree = "<group>"; };
+		26D0CB11283DFE4E0073498A /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		26D0CB13283DFE4E0073498A /* md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cpp; sourceTree = "<group>"; };
+		26D0CB14283DFE4E0073498A /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		26D0CB15283DFE4E0073498A /* DynamicKey5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey5.h; sourceTree = "<group>"; };
+		26D0CB16283DFE4E0073498A /* Packer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packer.h; sourceTree = "<group>"; };
+		26D0CB17283DFE4E0073498A /* generatorSignalToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = generatorSignalToken.h; sourceTree = "<group>"; };
+		26D0CB18283DFE4E0073498A /* AccessToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessToken.h; sourceTree = "<group>"; };
+		26D0CB19283DFE4E0073498A /* DynamicKey2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey2.h; sourceTree = "<group>"; };
+		26D0CB1A283DFE4E0073498A /* RtmTokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtmTokenBuilder.h; sourceTree = "<group>"; };
+		26D0CB1B283DFE4E0073498A /* DynamicKey3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey3.h; sourceTree = "<group>"; };
+		26D0CB1C283DFE4E0073498A /* generatorSignalToken-Linux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "generatorSignalToken-Linux.h"; sourceTree = "<group>"; };
+		26D0CB1D283DFE4E0073498A /* RtcTokenBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtcTokenBuilder.h; sourceTree = "<group>"; };
+		26D0CB1E283DFE4E0073498A /* DynamicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey.h; sourceTree = "<group>"; };
+		26D0CB1F283DFE4E0073498A /* DynamicKey4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey4.h; sourceTree = "<group>"; };
+		26D0CB23283DFEEB0073498A /* AgoraGameEngine-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AgoraGameEngine-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C1A8B8E636109C2F8647D68 /* Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension(Socket)/Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; sourceTree = "<group>"; };
 		4EAC22A0ABCEA5BE7ED7FCFA /* Pods-Agora-ScreenShare-Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension.release.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension/Pods-Agora-ScreenShare-Extension.release.xcconfig"; sourceTree = "<group>"; };
 		A6A12BD14C6C12D3D9AB21A6 /* Pods_Agora_ScreenShare_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Agora_ScreenShare_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -236,51 +243,51 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		2639A6FB282E0B9C0037E056 /* TokenBuilder */ = {
+		26D0CB0A283DFE4E0073498A /* TokenBuilder */ = {
 			isa = PBXGroup;
 			children = (
-				2639A6FC282E0B9C0037E056 /* TokenBuilder.m */,
-				2639A6FD282E0B9C0037E056 /* TokenBuilder.h */,
-				2639A6FE282E0B9C0037E056 /* RtmTokenTool */,
+				26D0CB0B283DFE4E0073498A /* TokenBuilder.m */,
+				26D0CB0C283DFE4E0073498A /* TokenBuilder.h */,
+				26D0CB0D283DFE4E0073498A /* RtmTokenTool */,
 			);
 			path = TokenBuilder;
 			sourceTree = "<group>";
 		};
-		2639A6FE282E0B9C0037E056 /* RtmTokenTool */ = {
+		26D0CB0D283DFE4E0073498A /* RtmTokenTool */ = {
 			isa = PBXGroup;
 			children = (
-				2639A6FF282E0B9C0037E056 /* RtmTokenTool.h */,
-				2639A700282E0B9C0037E056 /* RtmTokenTool.mm */,
-				2639A701282E0B9C0037E056 /* src */,
+				26D0CB0E283DFE4E0073498A /* RtmTokenTool.h */,
+				26D0CB0F283DFE4E0073498A /* RtmTokenTool.mm */,
+				26D0CB10283DFE4E0073498A /* src */,
 			);
 			path = RtmTokenTool;
 			sourceTree = "<group>";
 		};
-		2639A701282E0B9C0037E056 /* src */ = {
+		26D0CB10283DFE4E0073498A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				2639A702282E0B9C0037E056 /* utils.h */,
-				2639A703282E0B9C0037E056 /* md5 */,
-				2639A706282E0B9C0037E056 /* DynamicKey5.h */,
-				2639A707282E0B9C0037E056 /* Packer.h */,
-				2639A708282E0B9C0037E056 /* generatorSignalToken.h */,
-				2639A709282E0B9C0037E056 /* AccessToken.h */,
-				2639A70A282E0B9C0037E056 /* DynamicKey2.h */,
-				2639A70B282E0B9C0037E056 /* RtmTokenBuilder.h */,
-				2639A70C282E0B9C0037E056 /* DynamicKey3.h */,
-				2639A70D282E0B9C0037E056 /* generatorSignalToken-Linux.h */,
-				2639A70E282E0B9C0037E056 /* RtcTokenBuilder.h */,
-				2639A70F282E0B9C0037E056 /* DynamicKey.h */,
-				2639A710282E0B9C0037E056 /* DynamicKey4.h */,
+				26D0CB11283DFE4E0073498A /* utils.h */,
+				26D0CB12283DFE4E0073498A /* md5 */,
+				26D0CB15283DFE4E0073498A /* DynamicKey5.h */,
+				26D0CB16283DFE4E0073498A /* Packer.h */,
+				26D0CB17283DFE4E0073498A /* generatorSignalToken.h */,
+				26D0CB18283DFE4E0073498A /* AccessToken.h */,
+				26D0CB19283DFE4E0073498A /* DynamicKey2.h */,
+				26D0CB1A283DFE4E0073498A /* RtmTokenBuilder.h */,
+				26D0CB1B283DFE4E0073498A /* DynamicKey3.h */,
+				26D0CB1C283DFE4E0073498A /* generatorSignalToken-Linux.h */,
+				26D0CB1D283DFE4E0073498A /* RtcTokenBuilder.h */,
+				26D0CB1E283DFE4E0073498A /* DynamicKey.h */,
+				26D0CB1F283DFE4E0073498A /* DynamicKey4.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
 		};
-		2639A703282E0B9C0037E056 /* md5 */ = {
+		26D0CB12283DFE4E0073498A /* md5 */ = {
 			isa = PBXGroup;
 			children = (
-				2639A704282E0B9C0037E056 /* md5.cpp */,
-				2639A705282E0B9C0037E056 /* md5.h */,
+				26D0CB13283DFE4E0073498A /* md5.cpp */,
+				26D0CB14283DFE4E0073498A /* md5.h */,
 			);
 			path = md5;
 			sourceTree = "<group>";
@@ -299,6 +306,7 @@
 		E79BEF46273E50D9009FA838 /* Respurce */ = {
 			isa = PBXGroup;
 			children = (
+				2612DE23282A509D0049998A /* index.html */,
 				E79BEF47273E50ED009FA838 /* Gif */,
 			);
 			path = Respurce;
@@ -400,6 +408,8 @@
 			isa = PBXGroup;
 			children = (
 				E79BEFA0274796F7009FA838 /* NetworkManager.swift */,
+				2619EE6F28892EF400BB1855 /* GameNetworkManager.h */,
+				2619EE7028892EF400BB1855 /* GameNetworkManager.m */,
 			);
 			path = NetworkManager;
 			sourceTree = "<group>";
@@ -415,7 +425,7 @@
 		E79C25D2273B67DB00909CD4 = {
 			isa = PBXGroup;
 			children = (
-				E79C25DD273B67DB00909CD4 /* AgoraGameEngine */,
+				E79C25DD273B67DB00909CD4 /* Scene-Examples */,
 				E79C25DC273B67DB00909CD4 /* Products */,
 				E79C263D273BCC0A00909CD4 /* Localizable.strings */,
 				220C86AB99C410077231BCD4 /* Pods */,
@@ -431,10 +441,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E79C25DD273B67DB00909CD4 /* AgoraGameEngine */ = {
+		E79C25DD273B67DB00909CD4 /* Scene-Examples */ = {
 			isa = PBXGroup;
 			children = (
-				2639A6FB282E0B9C0037E056 /* TokenBuilder */,
+				26D0CB0A283DFE4E0073498A /* TokenBuilder */,
 				E79BEF9F274796E1009FA838 /* NetworkManager */,
 				E79C2630273BC16700909CD4 /* Extension */,
 				E79C262B273BC0B500909CD4 /* ToastView */,
@@ -449,10 +459,10 @@
 				E79C25E7273B67DD00909CD4 /* Assets.xcassets */,
 				E79C25E9273B67DD00909CD4 /* LaunchScreen.storyboard */,
 				E79C25EC273B67DD00909CD4 /* Info.plist */,
+				26D0CB23283DFEEB0073498A /* AgoraGameEngine-Bridging-Header.h */,
 				E79BEF46273E50D9009FA838 /* Respurce */,
-				2639A71D282E0CEC0037E056 /* AgoraGameEngine-Bridging-Header.h */,
 			);
-			path = AgoraGameEngine;
+			path = "Scene-Examples";
 			sourceTree = "<group>";
 		};
 		E79C25FE273B689A00909CD4 /* Common */ = {
@@ -493,6 +503,7 @@
 			isa = PBXGroup;
 			children = (
 				E79C25E2273B67DB00909CD4 /* MainViewController.swift */,
+				2612DE1F282A17130049998A /* SettingViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -673,6 +684,7 @@
 				E79BEF59273E50ED009FA838 /* sound.gif in Resources */,
 				E79BEF54273E50ED009FA838 /* SuperWine.gif in Resources */,
 				E79C263B273BCC0A00909CD4 /* Localizable.strings in Resources */,
+				2612DE24282A509D0049998A /* index.html in Resources */,
 				E79BEF56273E50ED009FA838 /* SuperRing.gif in Resources */,
 				E79C25E8273B67DD00909CD4 /* Assets.xcassets in Resources */,
 				E79C25E6273B67DB00909CD4 /* Main.storyboard in Resources */,
@@ -734,6 +746,7 @@
 				E79BEF37273D15D6009FA838 /* Screen.swift in Sources */,
 				E79C2611273B689B00909CD4 /* SyncUtil.swift in Sources */,
 				E79BEF5B273E5768009FA838 /* GIFImageView.swift in Sources */,
+				26D0CB21283DFE4E0073498A /* RtmTokenTool.mm in Sources */,
 				E79BEF45273E4D99009FA838 /* LiveGiftModel.swift in Sources */,
 				E79C264E273D062400909CD4 /* LiveRoomListCell.swift in Sources */,
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
@@ -742,13 +755,14 @@
 				E79C2644273BE7C000909CD4 /* LiveSettingView.swift in Sources */,
 				E79BEF3B273D21FD009FA838 /* LiveChatView.swift in Sources */,
 				E79BF0302754761A009FA838 /* GameApplyInfoModel.swift in Sources */,
+				26D0CB22283DFE4E0073498A /* md5.cpp in Sources */,
 				E7499C2C2770537C00E799FF /* MessageCell.swift in Sources */,
+				2619EE7128892EF400BB1855 /* GameNetworkManager.m in Sources */,
 				E79BEF3F273D3EF0009FA838 /* LiveToolView.swift in Sources */,
 				E79BF02B274B81A0009FA838 /* GameInfoModel.swift in Sources */,
 				E79C2626273B7BDA00909CD4 /* CreateLiveController.swift in Sources */,
 				E79BEF39273D18B4009FA838 /* LiveAvatarView.swift in Sources */,
 				E79C261C273B712000909CD4 /* BaseViewController.swift in Sources */,
-				2639A712282E0B9C0037E056 /* RtmTokenTool.mm in Sources */,
 				E79BEF752744FD8B009FA838 /* GCDTimer.swift in Sources */,
 				E79BEF68274203ED009FA838 /* PKLiveInviteView.swift in Sources */,
 				E79BEF33273D0F0C009FA838 /* LiveCanvasModel.swift in Sources */,
@@ -767,6 +781,7 @@
 				E79C2636273BC6C400909CD4 /* LiveRandomNameView.swift in Sources */,
 				E79C2642273BE5C500909CD4 /* AlertManager.swift in Sources */,
 				E79BEFA1274796F7009FA838 /* NetworkManager.swift in Sources */,
+				2612DE20282A17130049998A /* SettingViewController.swift in Sources */,
 				E79BEF772745036E009FA838 /* PKLiveProgressView.swift in Sources */,
 				E79BEF9427474C36009FA838 /* GameLiveController.swift in Sources */,
 				E7440E2C277420F200CBF4D8 /* LiveBaseView.swift in Sources */,
@@ -781,16 +796,15 @@
 				E710AE2F27A0F23300124356 /* ChangeRoomBgView.swift in Sources */,
 				E7499C1B276A078500E799FF /* LiveOnlineView.swift in Sources */,
 				E79BEF9827475677009FA838 /* GameModeView.swift in Sources */,
-				2639A713282E0B9C0037E056 /* md5.cpp in Sources */,
 				E79C260F273B689B00909CD4 /* JSONObject.swift in Sources */,
 				E79C25DF273B67DB00909CD4 /* AppDelegate.swift in Sources */,
 				E79C260E273B689B00909CD4 /* AgoraExtension.swift in Sources */,
+				26D0CB20283DFE4E0073498A /* TokenBuilder.m in Sources */,
 				E79C2646273CBA2700909CD4 /* LiveSettingModel.swift in Sources */,
 				E79BEF9C27477E16009FA838 /* GameCenterView.swift in Sources */,
 				E79BEF9627475239009FA838 /* GameWebView.swift in Sources */,
 				E79C260D273B689B00909CD4 /* Config.swift in Sources */,
 				E79BEF9E27477F66009FA838 /* GameCenterModel.swift in Sources */,
-				2639A711282E0B9C0037E056 /* TokenBuilder.m in Sources */,
 				E79C25E1273B67DB00909CD4 /* SceneDelegate.swift in Sources */,
 				E79C260C273B689B00909CD4 /* MBHUD.swift in Sources */,
 			);
@@ -959,7 +973,7 @@
 				DEVELOPMENT_TEAM = YS397FG5PA;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AgoraGameEngine/Info.plist;
+				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = AgoraGameEngine;
 				INFOPLIST_KEY_NSCameraUsageDescription = "App needs your permission to access camera for video interaction";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "App needs your permission to access microphone for audio interaction";
@@ -975,15 +989,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.scene.game.engine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "AgoraGameEngine/AgoraGameEngine-Bridging-Header.h";
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Scene-Examples/AgoraGameEngine-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -999,7 +1013,7 @@
 				DEVELOPMENT_TEAM = YS397FG5PA;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AgoraGameEngine/Info.plist;
+				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = AgoraGameEngine;
 				INFOPLIST_KEY_NSCameraUsageDescription = "App needs your permission to access camera for video interaction";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "App needs your permission to access microphone for audio interaction";
@@ -1015,15 +1029,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.agora.scene.game.engine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "AgoraGameEngine/AgoraGameEngine-Bridging-Header.h";
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Scene-Examples/AgoraGameEngine-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

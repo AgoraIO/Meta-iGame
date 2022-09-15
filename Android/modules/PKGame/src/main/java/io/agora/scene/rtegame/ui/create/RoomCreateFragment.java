@@ -31,16 +31,20 @@ public class RoomCreateFragment extends BaseFragment<GameFragmentCreateRoomBindi
         initListener();
 
         setupRandomName();
-        mViewModel.startPreview(mBinding.cameraPreviewFgCreate);
         ObjectAnimator.ofFloat(mBinding.cameraPreviewFgCreate, View.SCALE_X, 0.5f, 1f).setDuration(600L).start();
         ObjectAnimator.ofFloat(mBinding.cameraPreviewFgCreate, View.SCALE_Y, 0.5f, 1f).setDuration(600L).start();
     }
 
     @Override
-    public void onDestroyView() {
-        if (GlobalViewModel.currentRoom == null)
-            mViewModel.stopPreview();
-        super.onDestroyView();
+    public void onStart() {
+        super.onStart();
+        mViewModel.startPreview(mBinding.cameraPreviewFgCreate);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewModel.stopPreview();
     }
 
     private void initListener() {

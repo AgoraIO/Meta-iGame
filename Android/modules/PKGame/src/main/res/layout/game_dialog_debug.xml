@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/game_space_big">
+
+    <TextView
+        android:id="@+id/text_info_dg_debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--  agora env  -->
+    <RadioGroup
+        android:id="@+id/rg_agora_env"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_info_dg_debug">
+
+        <RadioButton
+            android:id="@+id/rb_agora_official"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_agora_official_env" />
+
+        <RadioButton
+            android:id="@+id/rb_agora_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_agora_test_env" />
+    </RadioGroup>
+
+    <!--  忽然 env  -->
+    <RadioGroup
+        android:id="@+id/rg_huran_env"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rg_agora_env">
+
+        <RadioButton
+            android:id="@+id/rb_huran_official"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_huran_official_env" />
+
+        <RadioButton
+            android:id="@+id/rb_huran_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_huran_test_env" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/check_web_dg_debug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/game_using_custom_web_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rg_huran_env" />
+
+    <CheckBox
+        android:id="@+id/check_gift_dg_debug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/game_gift_effect"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/check_web_dg_debug" />
+
+    <!--    0-无头像昵称(默认），1-有昵称无头像，2-有昵称有头像，3-无眤称有头像-->
+
+    <CheckBox
+        android:id="@+id/check_show_avatar_dg_debug"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/game_show_avatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/check_gift_dg_debug" />
+
+    <CheckBox
+        android:id="@+id/check_show_name_dg_debug"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/game_show_nickname"
+        app:layout_constraintStart_toEndOf="@id/check_show_avatar_dg_debug"
+        app:layout_constraintTop_toBottomOf="@id/check_gift_dg_debug" />
+
+    <Button
+        android:id="@+id/btn_log_dg_debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/game_space_small"
+        android:text="@string/game_check_log"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/check_show_avatar_dg_debug" />
+</androidx.constraintlayout.widget.ConstraintLayout>

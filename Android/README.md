@@ -16,7 +16,7 @@
 
 前往 [Agora官网](https://console.agora.io/) 注册项目，生成不带证书校验的 appId
 
-然后替换工程 `libs/base-library/src/main/res/values` 中 `strings_config.xml` 中 `rtc_app_id`
+然后替换工程 `libs/base-library/src/main/res/values` 中 `strings_config.xml` 中 `rtc_app_id`等信息
 
 再注册一个带证书校验的项目，用于游戏 SDK 验证,**你需要提交[工单][工单链接]联系我们开通相关权限**
 
